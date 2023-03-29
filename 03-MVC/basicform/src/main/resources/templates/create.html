@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Create</title>
+</head>
+<body>
+<div layout:fragment="customContent">
+    <form action="#" th:action="@{/create}" th:object="${newObject}" method="POST">
+        <div class="form-group">
+            <label for="fld1">Field 1</label>
+            <input type="text" class="form-control" id="fld1" placeholder="field 1 value" th:field="*{fld1}">
+            <span th:if="${#fields.hasErrors('fld1')}" th:errors="*{fld1}" th:errorclass="text-danger">Field 1 Error</span>
+        </div>    
+        <button type="submit" class="btn btn-primary">Create</button> &nbsp;&nbsp;&nbsp;
+        <a href="#" th:href="@{/index}" class="btn btn-warning">Back</a>
+    </form>
+</div>
+</body>
+</html>
+<!-- https://www.baeldung.com/spring-thymeleaf-error-messages -->
