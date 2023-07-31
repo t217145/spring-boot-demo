@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Students List</title>
+</head>
+<body>
+<section layout:fragment="customContent">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-2">
+            <a href="#" th:href="@{/students/create}" class="btn btn-primary">Create</a>         
+        </div>
+    </div>    
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Name </th>
+            <th>Gender</th>
+            <th>Event Date</th>
+        </tr>
+        <tr th:each="std : ${allStudents}">
+            <td th:text="${std.id}" />
+            <td th:text="${std.name}" />
+            <td th:text="${std.gender}" />
+            <td th:text="${std.dob}" />
+        </tr>
+    </table>
+</section>
+</body>
+</html>
