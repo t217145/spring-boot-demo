@@ -1,0 +1,6 @@
+2023-08-01 14:38:17 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'' (CUSTOMER: ""CUST_ID"" INTEGER NOT NULL)"; SQL statement:
+INSERT INTO "PUBLIC"."CUSTOMER"("CUST_ID","CERT_NO","FIRST_NAME","LAST_NAME")VALUES(?,?,?,?) [22018-214]
+2023-08-01 14:38:17 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'' (CUSTOMER: ""CUST_ID"" INTEGER NOT NULL)"; SQL statement:
+INSERT INTO "PUBLIC"."CUSTOMER"("CUST_ID","CERT_NO","FIRST_NAME","LAST_NAME")VALUES(?,?,?,?) [22018-214]
