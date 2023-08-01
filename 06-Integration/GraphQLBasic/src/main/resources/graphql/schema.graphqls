@@ -1,0 +1,10 @@
+type Query{
+    getOrdersById(orderId: ID): Orders
+}
+
+type Orders{
+    orderId: id
+    cusName: String
+    orderDtm: DateTime
+    overAllDiscount: 
+}
