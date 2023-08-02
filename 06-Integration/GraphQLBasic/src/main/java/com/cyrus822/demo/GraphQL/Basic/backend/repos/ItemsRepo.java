@@ -8,5 +8,5 @@ import com.cyrus822.demo.GraphQL.Basic.backend.domains.Items;
 
 public interface ItemsRepo extends JpaRepository<Items, Integer> {
     @Query("select i from Items i where i.itemCode = :itemCode")
-    Optional<Items> getItemsFromItemCode(@Param("itemCde") String itemCode);
+    Optional<Items> getItemsFromItemCode(@Param("itemCode") String itemCode);
 }

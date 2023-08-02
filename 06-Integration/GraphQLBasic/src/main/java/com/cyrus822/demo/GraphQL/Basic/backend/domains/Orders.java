@@ -1,7 +1,6 @@
 package com.cyrus822.demo.GraphQL.Basic.backend.domains;
 
 import java.io.Serializable;
-import java.util.Date;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,8 +21,6 @@ public class Orders implements Serializable {
     private int orderId;
 
     private String cusName;
-
-    private Date orderDtm;
 
     private float overAllDiscount;
 }

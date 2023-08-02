@@ -1,0 +1,29 @@
+http://localhost:8080/graphiql
+
+query{
+  getOrdersByItemCode(itemCode: "C789") {
+    orderId
+    cusName
+    overAllDiscount
+    orderDetail{
+      item{
+        itemName
+      }
+      qty
+    }
+  }
+}
+
+query{
+  getOrdersById(orderId: 1){
+      orderId
+      cusName
+      orderDetail{
+          item{
+              itemCode
+              itemName
+          }
+          qty
+      }
+  }
+}

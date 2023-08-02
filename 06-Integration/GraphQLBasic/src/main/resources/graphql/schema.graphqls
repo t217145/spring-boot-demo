@@ -1,10 +1,25 @@
 type Query{
     getOrdersById(orderId: ID): Orders
+    getOrdersByItemCode(itemCode: String): [Orders]
 }
 
 type Orders{
-    orderId: id
-    cusName: String
-    orderDtm: DateTime
-    overAllDiscount: 
+    orderId: ID!
+    cusName: String!
+    overAllDiscount: Float
+    orderDetail: OrderDetails!
+}
+
+type OrderDetails{
+    orderDtlId: ID!
+    orderId: Int!
+    item: Items!
+    qty: Int!
+}
+
+type Items{
+    itemId: ID!
+    itemCode: String!
+    itemName: String!
+    unitPrice: Float!
 }
