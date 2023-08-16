@@ -30,7 +30,7 @@ public class DemoController {
         } // end of checking if this is an invalid customer
         else {
             response.setResponseId(200);
-            response.setResponseData("This is a valid customer");
+            response.setResponseData("Echo : " + request.getCusData());
         }
 
         return response;
