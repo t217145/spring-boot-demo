@@ -1,0 +1,55 @@
+Command
+------------------------------------------------------------------------
+mvn -P01
+mvn -P02
+mvn -P03
+URL ------------------------------------------------------------------------
+http://localhost:8081/svc01/
+http://localhost:8082/svc02/
+http://localhost:8083/svc03/
+
+01  ------------------------------------------------------------------------
+{
+    "cusId": "c01",
+    "cusData": "This is a test"
+}
+
+{
+    "cusId": "c02",
+    "cusData": "This is a test"
+}
+
+{
+    "cusId": "c03",
+    "cusData": "This is a test"
+}
+02  ------------------------------------------------------------------------
+{
+    "cusId": "invalid c01",
+    "cusData": "This is a test"
+}
+
+{
+    "cusId": "c02",
+    "cusData": "This is a test"
+}
+
+{
+    "cusId": "invalid c03",
+    "cusData": "This is a test"
+}
+03  ------------------------------------------------------------------------
+{
+    "cusId": "invalid c01",
+    "cusData": "This is a test"
+}
+
+{
+    "cusId": "c02",
+    "cusData": "This is a test"
+}
+
+{
+    "cusId": "invalid c03",
+    "cusData": "This is a test s3"
+}
