@@ -21,7 +21,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -33,8 +32,43 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	<profiles>
+		<profile>
+			<id>01</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<ctxPath>svc01</ctxPath>
+				<port>8081</port>
+				<appId>s1</appId>
+			</properties>
+		</profile>
+		<profile>
+			<id>02</id>
+			<properties>
+				<ctxPath>svc02</ctxPath>
+				<port>8082</port>
+				<appId>s2</appId>
+			</properties>
+		</profile>
+		<profile>
+			<id>03</id>
+			<properties>
+				<ctxPath>svc03</ctxPath>
+				<port>8083</port>
+				<appId>s3</appId>
+			</properties>
+		</profile>		
+	</profiles>
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>		
+		<defaultGoal>clean spring-boot:run</defaultGoal>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

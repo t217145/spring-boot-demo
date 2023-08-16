@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "app.id",
+  "type": "java.lang.String",
+  "description": "When the request parameter equal to this value, it will throw exception"
+}]}
