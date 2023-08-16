@@ -1,6 +1,5 @@
 package com.cyrus822.demo.camel.consolidate.mainsvc.processors;
 
-import org.apache.camel.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.cyrus822.demo.camel.consolidate.mainsvc.domains.DemoRequest;
 import com.cyrus822.demo.camel.consolidate.mainsvc.domains.DemoResponse;
@@ -21,16 +20,16 @@ public class DemoProcessor {
     @Autowired
     private DemoFeignAPI03 svc03;
 
-    public DemoResponse callSvc01(@Header("svc01") DemoRequest request){
+    public DemoResponse callSvc01(DemoRequest request) {
         return svc01.index(request);
     }
 
-    public DemoResponse callSvc02(@Header("svc02") DemoRequest request){
+    public DemoResponse callSvc02(DemoRequest request) {
         return svc02.index(request);
     }
-    
-    public DemoResponse callSvc03(@Header("svc03") DemoRequest request){
+
+    public DemoResponse callSvc03(DemoRequest request) {
         return svc03.index(request);
-    }    
-    
+    }
+
 }

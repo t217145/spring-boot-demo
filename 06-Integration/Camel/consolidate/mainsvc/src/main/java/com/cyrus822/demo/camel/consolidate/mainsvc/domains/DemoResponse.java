@@ -12,4 +12,19 @@ import lombok.ToString;
 public class DemoResponse {
     private int responseId;
     private String responseData;
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        DemoResponse otherResp = (DemoResponse) obj;
+
+        return otherResp.responseId == this.responseId;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

@@ -1,34 +1,24 @@
 package com.cyrus822.demo.camel.consolidate.mainsvc.routes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.camel.CamelContext;
+import org.apache.camel.AggregationStrategy;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-
-import com.cyrus822.demo.camel.consolidate.mainsvc.domains.DemoRequest;
 import com.cyrus822.demo.camel.consolidate.mainsvc.domains.DemoResponse;
-import com.cyrus822.demo.camel.consolidate.mainsvc.processors.DemoBean;
 import com.cyrus822.demo.camel.consolidate.mainsvc.processors.DemoProcessor;
 
-import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.camel.support.SimpleRegistry;
-
 @Component
+@Configuration
 public class ConsolidateRoute extends RouteBuilder {
-
-    @Autowired
-    private DemoBean dBean;
-
-    @Autowired
-    private DemoProcessor dPro;    
 
     private static final Map<Integer, String> ERROR_MESSAGES = new HashMap<>();
 
@@ -38,69 +28,86 @@ public class ConsolidateRoute extends RouteBuilder {
         ERROR_MESSAGES.put(400, "Client not found");
         ERROR_MESSAGES.put(402, "Policy outdated");
         ERROR_MESSAGES.put(500, "Server Error");
-    }    
+    }
 
     @Override
-    @SuppressWarnings({"unchecked", "deprecation", "unlikely-arg-type"})
+    @SuppressWarnings({ "unchecked", "deprecation" })
     public void configure() throws Exception {
-        SimpleRegistry simpleRegistry = new SimpleRegistry(); // this class is just a mapper
-        simpleRegistry.bind("DemoBean", dBean);
-        simpleRegistry.bind("DemoProcessor", dPro);
-        CamelContext camelContext = new DefaultCamelContext(simpleRegistry);
-
-        camelContext.start();
-
         logger.info("start");
 
-        restConfiguration().component("jetty").contextPath("/api").port(8084).bindingMode(RestBindingMode.json);
-        rest().get("/demo").produces("application/json").outType(String.class).to("direct:start");
-
-        DemoRequest req01 = new DemoRequest("invalid c01", "Testing c01");
-        DemoRequest req02 = new DemoRequest("c02", "Testing c02 s02");
-        DemoRequest req03 = new DemoRequest("invalid c03", "Testing c03");
-
         from("direct:start")
-            .autoStartup(true)
-            .to("bean:DemoBean?method=demo()");
+                .multicast(new ConsolidateStrategy())
+                .parallelProcessing()
+                .to("bean:webAPIProcessor?method=callSvc01",
+                        "bean:webAPIProcessor?method=callSvc02",
+                        "bean:webAPIProcessor?method=callSvc03")
+                .end()
+                .process(exchange -> {
+                    logger.info("01");
+                    List<DemoResponse> responseCodes = exchange.getIn().getBody(List.class);
+                    logger.info("02");
+                    boolean hasNon200Response = responseCodes.stream().anyMatch(resp -> resp.getResponseId() != 200);
+                    logger.info("03");
+                    if (hasNon200Response) {
+                        List<String> respData = responseCodes.stream().map(r -> Integer.toString(r.getResponseId()))
+                                .toList();
+                        logger.info("04: {}", String.join(",", respData));
 
-        from("direct:start11")
-            .autoStartup(true)
-            .multicast().parallelProcessing()
-            .setHeader("svc01", constant(req01))
-            .setHeader("svc02", constant(req02))
-            .setHeader("svc03", constant(req03))
-            .to("bean:DemoProcessor?method=callSvc01(${svc01})", "bean:DemoProcessor?method=callSvc02(${svc02})", "bean:DemoProcessor?method=callSvc03(${svc03})")
-            .end()
-            .process(exchange -> {
-                List<DemoResponse> responseCodes = exchange.getIn().getBody(List.class);
+                        List<String> errorMessages = responseCodes.stream().distinct()
+                                .filter(resp -> resp.getResponseId() != 200
+                                        && ERROR_MESSAGES.containsKey(resp.getResponseId()))
+                                .map(resp -> ERROR_MESSAGES.get(resp.getResponseId()))
+                                .collect(Collectors.toList());
 
-                boolean hasNon200Response = responseCodes.stream().anyMatch(resp -> resp.getResponseId() != 200);
+                        logger.info("05 : {}", String.join(",", errorMessages));
+                        errorMessages.addAll(
+                                responseCodes.stream().distinct()
+                                        .filter(resp -> resp.getResponseId() != 200
+                                                && !ERROR_MESSAGES.containsKey(resp.getResponseId()))
+                                        .map(DemoResponse::getResponseData)
+                                        .collect(Collectors.toList()));
+                        logger.info("06");
+                        String rtn = String.join(",", errorMessages);
+                        logger.info("07");
+                        exchange.getOut().setBody(rtn);
+                        logger.info("08");
+                        logger.error(rtn);
+                    } else {
+                        logger.info("04a");
+                        List<String> successMessage = responseCodes.stream().map(resp -> resp.getResponseData())
+                                .toList();
+                        logger.info("05a");
+                        String rtn = String.join(",", successMessage);
+                        logger.info("06a");
+                        exchange.getOut().setBody(rtn);
+                        logger.info("07a");
+                        logger.info(rtn);
+                    }
+                    logger.info("end");
+                });
+    }// end of configure()
 
-                if (hasNon200Response) {
-                    List<String> errorMessages = responseCodes.stream()
-                            .filter(resp -> resp.getResponseId() != 200 && ERROR_MESSAGES.containsKey(resp.getResponseId()))
-                            .map(ERROR_MESSAGES::get)
-                            .collect(Collectors.toList());
-                    
-                    errorMessages.addAll(
-                        responseCodes.stream()
-                            .filter(resp -> resp.getResponseId() != 200 && ERROR_MESSAGES.containsKey(resp.getResponseId()))
-                            .map(resp -> resp.getResponseData())
-                            .collect(Collectors.toList())
-                    );
+    @Bean
+    public DemoProcessor webAPIProcessor() {
+        return new DemoProcessor();
+    }
 
-                    String rtn = String.join(",", errorMessages);
-                    exchange.getOut().setBody(rtn);
-                    logger.error(rtn);
-                } else {
-                    List<String> successMessage = responseCodes.stream().map(resp -> resp.getResponseData()).toList();
-                    String rtn = String.join(",", successMessage);
-                    exchange.getOut().setBody(rtn);
-                    logger.info(rtn);
-                }
-            });
+    @SuppressWarnings("unchecked")
+    public static class ConsolidateStrategy implements AggregationStrategy {
+        @Override
+        public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+            List<DemoResponse> allResponse;
+            if (oldExchange == null) {
+                allResponse = new ArrayList<>();
+            } else {
+                allResponse = oldExchange.getIn().getBody(List.class);
+            }
 
-            
-        camelContext.close();
+            DemoResponse newResponse = newExchange.getIn().getBody(DemoResponse.class);
+
+            allResponse.add(newResponse);
+            newExchange.getIn().setBody(allResponse);
+            return newExchange;
+        }
     }
 }
