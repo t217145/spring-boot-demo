@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -21,8 +19,6 @@ import com.cyrus822.demo.camel.consolidate.mainsvc.processors.DemoProcessor;
 public class ConsolidateRoute extends RouteBuilder {
 
     private static final Map<Integer, String> ERROR_MESSAGES = new HashMap<>();
-
-    private Logger logger = LoggerFactory.getLogger(ConsolidateRoute.class);
 
     static {
         ERROR_MESSAGES.put(400, "Client not found");
