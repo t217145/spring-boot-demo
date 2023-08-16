@@ -33,8 +33,6 @@ public class ConsolidateRoute extends RouteBuilder {
     @Override
     @SuppressWarnings({ "unchecked", "deprecation" })
     public void configure() throws Exception {
-        logger.info("start");
-
         from("direct:start")
                 .multicast(new ConsolidateStrategy())
                 .parallelProcessing()
@@ -43,47 +41,32 @@ public class ConsolidateRoute extends RouteBuilder {
                         "bean:webAPIProcessor?method=callSvc03")
                 .end()
                 .process(exchange -> {
-                    logger.info("01");
                     List<DemoResponse> responseCodes = exchange.getIn().getBody(List.class);
-                    logger.info("02");
-                    boolean hasNon200Response = responseCodes.stream().anyMatch(resp -> resp.getResponseId() != 200);
-                    logger.info("03");
-                    if (hasNon200Response) {
-                        List<String> respData = responseCodes.stream().map(r -> Integer.toString(r.getResponseId()))
-                                .toList();
-                        logger.info("04: {}", String.join(",", respData));
 
+                    boolean hasNon200Response = responseCodes.stream().anyMatch(resp -> resp.getResponseId() != 200);
+
+                    if (hasNon200Response) {
                         List<String> errorMessages = responseCodes.stream().distinct()
                                 .filter(resp -> resp.getResponseId() != 200
                                         && ERROR_MESSAGES.containsKey(resp.getResponseId()))
                                 .map(resp -> ERROR_MESSAGES.get(resp.getResponseId()))
                                 .collect(Collectors.toList());
 
-                        logger.info("05 : {}", String.join(",", errorMessages));
                         errorMessages.addAll(
                                 responseCodes.stream().distinct()
                                         .filter(resp -> resp.getResponseId() != 200
                                                 && !ERROR_MESSAGES.containsKey(resp.getResponseId()))
                                         .map(DemoResponse::getResponseData)
                                         .collect(Collectors.toList()));
-                        logger.info("06");
+
                         String rtn = String.join(",", errorMessages);
-                        logger.info("07");
                         exchange.getOut().setBody(rtn);
-                        logger.info("08");
-                        logger.error(rtn);
                     } else {
-                        logger.info("04a");
                         List<String> successMessage = responseCodes.stream().map(resp -> resp.getResponseData())
                                 .toList();
-                        logger.info("05a");
                         String rtn = String.join(",", successMessage);
-                        logger.info("06a");
                         exchange.getOut().setBody(rtn);
-                        logger.info("07a");
-                        logger.info(rtn);
                     }
-                    logger.info("end");
                 });
     }// end of configure()
 
