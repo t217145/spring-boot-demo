@@ -1,5 +1,7 @@
 package com.cyrus822.demo.camel.consolidate.websvc.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +12,8 @@ import com.cyrus822.demo.camel.consolidate.websvc.domains.DemoResponse;
 
 @RestController
 public class DemoController {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${app.id}")
     private String appId;
@@ -32,7 +36,7 @@ public class DemoController {
             response.setResponseId(200);
             response.setResponseData("Echo : " + request.getCusData());
         }
-
+        logger.info("Service {} called.", appId);
         return response;
     }// end of method index()
 }
