@@ -11,10 +11,7 @@ import comp368.demo.cmdclient.feignapi.demowsapi;
 import comp368.demo.cmdclient.models.Contacts;
 
 @Component
-@ConditionalOnProperty(
-  value="client.type", 
-  havingValue = "feign", 
-  matchIfMissing = true)
+@ConditionalOnProperty(value = "client.type", havingValue = "feign", matchIfMissing = true)
 public class FeignClientCmd implements CommandLineRunner {
 
     @Autowired
@@ -23,24 +20,24 @@ public class FeignClientCmd implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("\r\n\r\n\r\n\r\n/************Running Feign Client ************/\r\n\r\n\r\n\r\n");
-        try{
+        try {
             api.add(new Contacts(0, "From Feign", null, "Testing"));
 
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            while(true){
+            while (true) {
                 List<Contacts> allContacts = api.index();
                 for (Contacts contacts : allContacts) {
                     System.out.println(contacts.toString());
                 }
                 System.out.println("Press any key to run again\t\tPress \"X\" to exit.");
                 String input = "";
-                if((input = br.readLine()) != null && input.equals("X")){
+                if ((input = br.readLine()) != null && input.equals("X")) {
                     break;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }//end of try-catch
-    }//end of run()
-    
+        } // end of try-catch
+    }// end of run()
+
 }

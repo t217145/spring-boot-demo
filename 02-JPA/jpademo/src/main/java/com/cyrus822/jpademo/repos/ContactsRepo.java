@@ -7,10 +7,12 @@ import org.springframework.data.repository.query.Param;
 import com.cyrus822.jpademo.models.Contacts;
 
 public interface ContactsRepo extends JpaRepository<Contacts, Integer> {
-    @Query("select c from Contacts c where c.name = :myName")
+    @Query("select c from Contacts c where c.name like :myName")
     List<Contacts> findName(@Param("myName") String targetName);
 
     List<Contacts> findByName(String name);
 
     List<Contacts> findByPhone(String phone);
+
+    List<Contacts> findByEmail(String email);
 }

@@ -19,11 +19,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ToString
 @Entity
-public class MyObjects implements Serializable{
+public class MyObjects implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @NotBlank
+    @NotBlank(message = "Field 1 value must not be blank")
     @Size(min = 3, max = 100, message = "Field 1 value must between 3 to 100 characters")
     @Column(length = 100, nullable = false)
     private String fld1;
