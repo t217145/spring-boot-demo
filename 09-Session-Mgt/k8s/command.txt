@@ -1,0 +1,2 @@
+kubectl apply -f .
+kubectl get services -o wide -w --namespace ingress-nginx
