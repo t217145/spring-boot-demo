@@ -17,8 +17,15 @@ public class RMQController {
 
     @GetMapping("/send")
     public String send(String message) {
-
         rabbitTemplate.convertAndSend(queueName, message);
+
+        
         return String.format("%s sent to the queue", message);
-    }    
+    }
+
+    @GetMapping("/receive")
+    public String receive(){
+        Object message = rabbitTemplate.receiveAndConvert(queueName);
+        return message != null ? message.toString() : "No message in the queue";
+    }
 }
